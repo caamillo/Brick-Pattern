@@ -2,22 +2,28 @@ from PIL import Image, ImageDraw
 import numpy as np
 import cv2
 
-imgW, imgH = 1920, 1080
+outputW, outputH = 1920, 1080
+outputDistanceX, OutputDistanceY = 5, 5
 
-print('Image size:', imgW, 'x', imgH)
+print('Output size:', outputW, 'x', outputH)
 
-img = Image.new(
+output = Image.new(
     'RGB', # Mode
-    (imgW, imgH), # Size
+    (outputW, outputH), # Size
     'white'
 )
 
-with open('pattern.png') as pattern:
-    pass
+pattern = Image.open('pattern.png')
+patternW, patternH = pattern.size
+patternPixels = pattern.load()
+
+for y in range(patternH):
+    for x in range(patternW):
+        print(patternPixels[x, y])
 
 # OpenCV Show
 
-cvImage = np.array(img)
+cvImage = np.array(output)
 cvImage = cvImage[:, :, ::-1].copy() # rgb -> bgr
 
 cv2.imshow('image', cvImage)
