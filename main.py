@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw
+from math import floor
 import numpy as np
 import cv2
 
@@ -18,12 +19,6 @@ output = Image.new(
 
 # Pattern
 
-pattern = Image.open('pattern.png')
-patternW, patternH = pattern.size
-patternPixels = pattern.load()
-
-# Pattern Replacing Loop
-
 def deleteTransparency(im):
     if im.mode in ('RGBA', 'LA') or (im.mode == 'P' and 'transparency' in im.info):
         alpha = im.convert('RGBA').split()[-1]
@@ -33,14 +28,37 @@ def deleteTransparency(im):
     else:
         return im
 
-"""
-for y in range(outputH):
-    for x in range(outputW):
-        if y < patternH and x < patternW and patternPixels[x, y][3] != 0:
-            output.putpixel((x, y), patternPixels[x, y])
-"""
+pattern = deleteTransparency(Image.open('pattern.png'))
+patternW, patternH = pattern.size
+patternPixels = pattern.load()
 
-output.paste(deleteTransparency(pattern), (300, 300))
+# Pattern Replacing Loop
+
+# Calculating Tiles
+
+grouptiles = [
+    [],
+    []
+]
+
+for i in range(2):
+    idx = 0
+    idx += patternW
+    if i:
+        idx *= 2
+    while True:
+        if idx < outputW:
+            print(i, patternW, idx - patternW, idx)
+            grouptiles[i].append((idx - patternW, idx))
+            idx += (outputDistanceX + patternW)
+        else:
+            break
+
+print(grouptiles)
+
+for c,tiles in enumerate(grouptiles):
+    for x, y in tiles:
+        output.paste(pattern, (x, 100 if c else 300))
 
 # OpenCV Show
 
