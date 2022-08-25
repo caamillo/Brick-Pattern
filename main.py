@@ -5,9 +5,10 @@ import cv2
 
 # Output
 
-outputW, outputH = 1920, 1080
-outputDistanceX, OutputDistanceY = 5, 5
+outputW, outputH = 1280, 720
+outputDistanceX, OutputDistanceY = 100, 100
 outputBackgroundColor = (0, 0, 0)
+outputDensity = 1
 
 print('Output size:', outputW, 'x', outputH)
 
@@ -50,20 +51,32 @@ for i in range(2):
         if idx < outputW:
             print(i, patternW, idx - patternW, idx)
             grouptiles[i].append((idx - patternW, idx))
-            idx += (outputDistanceX + patternW)
+            idx += (outputDistanceX + patternW) * outputDensity
         else:
             break
 
 print(grouptiles)
 
-for c,tiles in enumerate(grouptiles):
-    for x, y in tiles:
-        output.paste(pattern, (x, 100 if c else 300))
+y = 0
+choicePattern = 0
+
+while True:
+    if y < outputH:
+        tiles = grouptiles[choicePattern]
+        for x, x2 in tiles:
+            output.paste(pattern, (x, y))
+        if not choicePattern:
+            choicePattern += 1
+        else:
+            choicePattern -= 1
+        y += (patternH + OutputDistanceY)
+    else:
+        break
 
 # OpenCV Show
 
 cvImage = np.array(output)
 cvImage = cvImage[:, :, ::-1].copy() # rgb -> bgr
 
-cv2.imshow('image', cvImage)
+cv2.imshow('brick pattern', cvImage)
 cv2.waitKey(0)
