@@ -17,7 +17,7 @@ print('Output size:', outputW, 'x', outputH)
 output = Image.new(
     'RGB', # Mode
     (outputW, outputH), # Size
-    'black' # Background Color
+    outputBackgroundColor # Background Color
 )
 
 # Pattern
@@ -74,7 +74,9 @@ while True:
     if y < outputH:
         tiles = grouptiles[choicePattern]
         for x, x2 in tiles:
-            resizedpattern = resizePattern(pattern, rnd.uniform(1.0, 3.0))
+            testuniform = rnd.uniform(1.0, 2.5)
+            resizedpattern = resizePattern(pattern, testuniform)
+            print(testuniform)
             resizedpatternH = resizedpattern.size[1]
             output.paste(resizedpattern, (x, y + int((patternH - resizedpatternH) / 2)))
         if not choicePattern:
@@ -92,3 +94,4 @@ cvImage = cvImage[:, :, ::-1].copy() # rgb -> bgr
 
 cv2.imshow('Brick Pattern', cvImage)
 cv2.waitKey(0)
+output.save('output.png')
