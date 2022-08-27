@@ -1,14 +1,16 @@
 from PIL import Image, ImageDraw
 from math import floor
 import numpy as np
+import random as rnd
 import cv2
 
 # Output
 
 outputW, outputH = 1280, 720
-outputDistanceX, OutputDistanceY = 100, 100
+outputDistanceX, OutputDistanceY = 30, 30
 outputBackgroundColor = (0, 0, 0)
 outputDensity = 1
+patternResize = 2
 
 print('Output size:', outputW, 'x', outputH)
 
@@ -30,6 +32,14 @@ def deleteTransparency(im):
         return im
 
 pattern = deleteTransparency(Image.open('pattern.png'))
+patternW, patternH = pattern.size
+
+# Resize It
+
+def resizePattern(pattern, by):
+    return pattern.resize((int(patternW / by), int(patternH / by)))
+
+pattern = resizePattern(pattern, 2)
 patternW, patternH = pattern.size
 patternPixels = pattern.load()
 
@@ -64,7 +74,9 @@ while True:
     if y < outputH:
         tiles = grouptiles[choicePattern]
         for x, x2 in tiles:
-            output.paste(pattern, (x, y))
+            resizedpattern = resizePattern(pattern, rnd.uniform(1.0, 3.0))
+            resizedpatternH = resizedpattern.size[1]
+            output.paste(resizedpattern, (x, y + int((patternH - resizedpatternH) / 2)))
         if not choicePattern:
             choicePattern += 1
         else:
@@ -78,5 +90,5 @@ while True:
 cvImage = np.array(output)
 cvImage = cvImage[:, :, ::-1].copy() # rgb -> bgr
 
-cv2.imshow('brick pattern', cvImage)
+cv2.imshow('Brick Pattern', cvImage)
 cv2.waitKey(0)
